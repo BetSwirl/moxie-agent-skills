@@ -1,5 +1,6 @@
 import { z } from "zod";
 import {
+    CASINO_GAME_TYPE,
     COINTOSS_FACE,
     MAX_SELECTABLE_DICE_NUMBER,
     MAX_SELECTABLE_ROULETTE_NUMBER,
@@ -72,4 +73,13 @@ export const GetBetParameters = z.object({
         .describe(
             "Transaction hash to check status for (hash got when placing the bet)"
         ),
+});
+
+export const GetBetsParameters = z.object({
+    bettor: hexAddress.nullable().describe("The bettor address"),
+    game: z
+        .nativeEnum(CASINO_GAME_TYPE)
+        .nullable()
+        .describe("The game to get the bets for"),
+    token: hexAddress.nullable().describe("The token address"),
 });

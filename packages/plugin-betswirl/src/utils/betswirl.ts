@@ -3,12 +3,14 @@ import { MoxieWalletClient } from "@moxie-protocol/moxie-lib/src/wallet";
 import { type Hex } from "viem";
 import { ethers } from "ethers";
 import {
+    Bet_OrderBy,
     CASINO_GAME_TYPE,
     type CasinoChainId,
     // Dice,
     // DiceNumber,
     GAS_TOKEN_ADDRESS,
     GameEncodedInput,
+    OrderDirection,
     // RawBetRequirements,
     type RawCasinoToken,
     // Roulette,
@@ -16,6 +18,7 @@ import {
     Token,
     casinoChainById,
     fetchBetByHash,
+    fetchBets,
     getBetRequirementsFunctionData,
     getCasinoTokensFunctionData,
     getChainlinkVrfCostFunctionData,
@@ -241,6 +244,40 @@ export async function getBet(walletClient: MoxieWalletClient, txHash: Hex) {
             );
         }
         return betData.bet;
+    } catch (error) {
+        throw new Error(`An error occured while getting the bet: ${error}`);
+    }
+}
+
+export async function getBets(
+    chainId: CasinoChainId,
+    bettor: Hex,
+    game: CASINO_GAME_TYPE,
+    _token: Hex
+) {
+    try {
+        const bets = await fetchBets(
+            { chainId },
+            {
+                bettor,
+                game,
+                // token: {
+                //     address: token
+                // }
+            },
+            undefined,
+            undefined,
+            {
+                key: Bet_OrderBy.BetTimestamp,
+                order: OrderDirection.Desc,
+            }
+        );
+        if (bets.error) {
+            throw new Error(
+                `[${bets.error.code}] Error fetching bets: ${bets.error.message}`
+            );
+        }
+        return bets.bets;
     } catch (error) {
         throw new Error(`An error occured while getting the bet: ${error}`);
     }
