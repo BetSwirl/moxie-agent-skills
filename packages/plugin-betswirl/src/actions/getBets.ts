@@ -104,7 +104,7 @@ export const getBetsAction: Action = {
 | - | - | - | - | - | - |
 ${bets.map(
     (bet) =>
-        `| ${bet.isWin ? `💰 ${bet.payoutMultiplier.toFixed(2)}x` : "💥"} | ${bet.game} | $[${bet.token.symbol}\\|${bet.token.address}] | [${bet.fomattedRollTotalBetAmount}](${casinoChain.viemChain.blockExplorers.default.url}/tx/${bet.betTxnHash}) | [${bet.formattedPayout}](${casinoChain.viemChain.blockExplorers.default.url}/tx/${bet.rollTxnHash}) | ${bet.betDate.toUTCString()} | `
+        `| ${bet.isWin ? `💰 ${bet.payoutMultiplier.toFixed(2)}x` : "💥"} | ${bet.game} | ${bet.token.symbol === casinoChain.viemChain.nativeCurrency.symbol ? bet.token.symbol : `$[${bet.token.symbol}\\|${bet.token.address}]`} | [${bet.fomattedRollTotalBetAmount}](${casinoChain.viemChain.blockExplorers.default.url}/tx/${bet.betTxnHash}) | [${bet.formattedPayout}](${casinoChain.viemChain.blockExplorers.default.url}/tx/${bet.rollTxnHash}) | ${bet.betDate.toUTCString()} | `
 ).join(`
 `)}
 
