@@ -8,8 +8,7 @@
         "@betswirl/sdk-core": "0.0.1-beta-17",
         "@moxie-protocol/core": "workspace:*",
         "@moxie-protocol/moxie-lib": "workspace:*",
-        "ethers": "^6.13.5",
-        "graphql-request": "^7.1.2"
+        "ethers": "^6.13.5"
     },
     "devDependencies": {
         "@types/node": "^22.13.5",
