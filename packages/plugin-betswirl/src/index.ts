@@ -1,5 +1,5 @@
 import type { Plugin } from "@moxie-protocol/core";
-import { coinTossAction } from "./actions/coinTossAction";
+import { coinTossAction } from "./actions/coinToss";
 import { getBetsAction } from "./actions/getBets";
 
 const betswirlPlugin: Plugin = {
