@@ -135,7 +135,7 @@ ${bets.map(
             {
                 user: "{{user2}}",
                 content: {
-                    text: "",
+                    text: "A Markdown table listing all bets",
                     action: "GET_BETS",
                 },
             },
