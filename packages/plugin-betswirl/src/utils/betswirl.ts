@@ -266,7 +266,7 @@ export async function getBets(
                 // }
             },
             undefined,
-            undefined,
+            5,
             {
                 key: Bet_OrderBy.BetTimestamp,
                 order: OrderDirection.Desc,

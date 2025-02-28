@@ -76,10 +76,9 @@ export const GetBetParameters = z.object({
 });
 
 export const GetBetsParameters = z.object({
-    bettor: hexAddress.nullable().describe("The bettor address"),
+    bettor: z.union([hexAddress, z.literal("")]).describe("The bettor address"),
     game: z
-        .nativeEnum(CASINO_GAME_TYPE)
-        .nullable()
+        .union([z.nativeEnum(CASINO_GAME_TYPE), z.literal("")])
         .describe("The game to get the bets for"),
-    token: hexAddress.nullable().describe("The token address"),
+    token: z.union([hexAddress, z.literal("")]).describe("The token address"),
 });

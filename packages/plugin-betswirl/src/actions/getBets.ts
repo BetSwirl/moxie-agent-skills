@@ -11,6 +11,7 @@ import {
     ModelClass,
 } from "@moxie-protocol/core";
 import { MoxieWalletClient } from "@moxie-protocol/moxie-lib/src/wallet";
+import { getUserMoxieWalletAddress } from "@moxie-protocol/moxie-lib/src/services/moxieUserService";
 import { getBetsTemplate } from "../templates";
 import { GetBetsParameters } from "../types";
 import { type Hex } from "viem";
@@ -18,6 +19,9 @@ import {
     CASINO_GAME_TYPE,
     CasinoChainId,
     casinoChainIds,
+    casinoChainById,
+    slugById,
+    truncate,
 } from "@betswirl/sdk-core";
 import { getBets } from "../utils/betswirl";
 
@@ -76,6 +80,9 @@ export const getBetsAction: Action = {
                 game: string;
                 token: string;
             };
+            const bettorAddress = (
+                bettor ? bettor : wallet.address
+            ).toLowerCase();
 
             elizaLogger.log(
                 `Getting ${game ? game : ""} ${token ? token : ""} bets ${bettor ? ` from ${bettor}` : ""} ...`
@@ -83,17 +90,28 @@ export const getBetsAction: Action = {
 
             const bets = await getBets(
                 chainId,
-                (bettor ? bettor : wallet.address) as Hex,
+                bettorAddress as Hex,
                 game as CASINO_GAME_TYPE,
                 token as Hex
             );
-
-            const resolutionMessage = `Bets list:
+            const moxieUserInfo =
+                await getUserMoxieWalletAddress(bettorAddress);
+            const casinoChain = casinoChainById[chainId];
+            let resolutionMessage: string;
+            if (bets.length) {
+                resolutionMessage = `Bets of ${moxieUserInfo ? `@[${moxieUserInfo.userName}|${moxieUserInfo.id}]` : `[${truncate(bettorAddress, 10)}](${casinoChain.viemChain.blockExplorers.default.url}/address/${bettorAddress})`}:
+| Draw | Game | Token | Bet | Payout | Date |
+| - | - | - | - | - | - |
 ${bets.map(
     (bet) =>
-        `- ${bet.betDate.toUTCString()}: ${bet.token.symbol} amount ${bet.formattedBetAmount}, payout ${bet.formattedPayout}`
+        `| ${bet.isWin ? `💰 ${bet.payoutMultiplier.toFixed(2)}x` : "💥"} | ${bet.game} | $[${bet.token.symbol}\\|${bet.token.address}] | [${bet.fomattedRollTotalBetAmount}](${casinoChain.viemChain.blockExplorers.default.url}/tx/${bet.betTxnHash}) | [${bet.formattedPayout}](${casinoChain.viemChain.blockExplorers.default.url}/tx/${bet.rollTxnHash}) | ${bet.betDate.toUTCString()} | `
 ).join(`
-`)}`;
+`)}
+
+[🔗 Go to the full bet list](https://www.betswirl.com/${slugById[chainId]}/profile/${bettorAddress}/casino)`;
+            } else {
+                resolutionMessage = `${moxieUserInfo ? `@[${moxieUserInfo.userName}|${moxieUserInfo.id}]` : `[${truncate(bettorAddress, 10)}](${casinoChain.viemChain.blockExplorers.default.url}/address/${bettorAddress}) hasn’t bet yet!`}`;
+            }
 
             elizaLogger.success(resolutionMessage);
             await callback({
